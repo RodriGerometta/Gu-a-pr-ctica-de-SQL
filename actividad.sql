@@ -260,3 +260,82 @@ FROM country
     INNER JOIN countrylanguage on country.code = countrylanguage.countrycode
 WHERE
     countrylanguage.language = "Spanish";
+
+/*31. Listar los nombres y las capitales de los países en cuya capital se concentre más de la mitad de su población total. 
+ (Se esperan 2 columnas y 14 registros).*/
+
+SELECT
+    country.name as "Nombre",
+    city.name as "Capital"
+FROM country
+    INNER JOIN city on country.code = city.countrycode
+WHERE
+    city.population / country.population > 0.5;
+
+SELECT
+    country.name as "Nombre",
+    city.name as "Capital"
+FROM country
+    INNER JOIN city on country.code = city.countrycode
+WHERE
+    city.population > (country.population / 2);
+
+/*32. Listar los nombres y la superficie de los países africanos cuya capital coincida con el nombre del distrito a la que pertenece. 
+ (Se esperan 2 columnas y 32 registros).*/
+
+SELECT
+    country.name as "Pais",
+    country.SurfaceArea as "Superficie"
+FROM country
+    INNER JOIN city on country.capital = city.id
+WHERE
+    country.continent = "africa"
+    and city.name = city.district;
+
+/*33. Listar los nombres, las capitales y el año de independencia (sin nulos) de los 20 países más antiguos. 
+ (Se esperan 3 columnas y 20 registros).*/
+
+SELECT
+    country.name as "Pais",
+    city.name as "Capital",
+    country.IndepYear
+FROM country
+    INNER JOIN city on country.capital = city.id
+WHERE
+    country.IndepYear IS NOT NULL
+ORDER BY country.IndepYear ASC
+LIMIT 20;
+
+/*34. Listar las ciudades junto a sus idiomas oficiales, donde no se hable español, inglés, portugués, italiano, francés o alemán de manera oficial. 
+ (Se esperan 2 columnas y 2694 registros).*/
+
+SELECT
+    city.name as "Ciudad",
+    countrylanguage.language as "Idioma oficial"
+from city
+    INNER JOIN countrylanguage on city.CountryCode = countrylanguage.CountryCode
+WHERE
+    countrylanguage.isofficial not IN(
+        "Spanish",
+        "English",
+        "portuguese",
+        "italian",
+        "french",
+        "german"
+    );
+
+/*35. Listar nombre, población y país de las diez ciudades europeas de habla inglesa más pobladas. 
+ (Se esperan 3 columnas y 10 registros).*/
+
+SELECT
+    city.name as "Ciudad",
+    city.population as "Poblacion",
+    country.name as "Pais"
+FROM city
+    INNER JOIN country on city.countrycode = country.code
+    INNER JOIN countrylanguage ON countrylanguage.countrycode = country.code
+WHERE
+    country.continent in ("Europe")
+    and countrylanguage.language = "english"
+ORDER BY city.population desc
+LIMIT 10;
