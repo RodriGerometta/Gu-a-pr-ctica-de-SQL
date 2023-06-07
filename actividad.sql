@@ -339,3 +339,118 @@ WHERE
     and countrylanguage.language = "english"
 ORDER BY city.population desc
 LIMIT 10;
+
+/*Funciones de agregación. Agrupamiento.*/
+
+/*36. Mostrar según la tabla de países, la cantidad total de población, la población máxima, la población mínima, el promedio de población y con cuántos registros de población se cuenta. 
+ (Se esperan 5 columnas y 1 registro).*/
+
+SELECT
+    SUM(country.population) as "Poblacion total",
+    MAX(country.population) as "Poblacion maxima",
+    MIN(country.population) as "Poblacion minima",
+    AVG(country.population) as "Poblacion promedio",
+    COUNT(country.population) as "Registro de poblacion"
+FROM country;
+
+/*37. Mostrar según la tabla de países, la cantidad total de población, la población máxima, la población mínima y el promedio de población, por cada continente.
+ (Se esperan 5 columnas y 7 registros).*/
+
+SELECT
+    country.continent as "Continente",
+    SUM(country.population) as "Poblacion total",
+    MAX(country.population) as "Poblacion maxima",
+    MIN(country.population) as "Poblacion minima",
+    AVG(country.population) as "Poblacion promedio"
+FROM country
+GROUP BY country.continent;
+
+/*38. Agrupar a todos los países según el continente al que pertenecen. Mostrar los continentes junto a la cantidad de naciones que pertenecen a cada uno. 
+ (Se esperan 2 columnas y 7 registros).*/
+
+SELECT
+    country.continent as "Continente",
+    count(country.code) as "Cantidad de paises"
+FROM country
+GROUP BY country.continent;
+
+/*39. Agrupar a todas las ciudades según el país al que pertenecen. Mostrar los códigos de países junto a la sumatoria total de habitantes de cada uno. 
+ (Se esperan 2 columnas y 232 registros).*/
+
+SELECT
+    country.code as "Codigo pais",
+    SUM(country.population) as "Total de habitantes"
+FROM country
+    INNER JOIN city on country.code = city.countrycode
+GROUP BY country.code;
+
+/*40. Agrupar a todos los lenguajes según su nombre. Mostrar los nombres de los lenguajes junto al porcentaje de habla mínimo registrado para cada uno. 
+ (Se esperan 2 columnas y 457 registros).*/
+
+SELECT
+    countrylanguage.language as "Nombre lenguaje",
+    MIN(countrylanguage.percentage) as "% habla min"
+FROM countrylanguage
+GROUP BY
+    countrylanguage.language;
+
+/*41. Mostrar las distintas formas de gobierno posibles de los países europeos junto a su correspondiente promedio de población que vive bajo estas circunstancias.
+ (Se esperan 2 columnas y 10 registros).*/
+
+SELECT
+    country.GovernmentForm as "Forma de gobierno",
+    AVG(country.population) as "Promedio de poblacion"
+FROM country
+WHERE
+    country.continent = "Europe"
+GROUP BY
+    country.GovernmentForm;
+
+/*42. Mostrar las diez regiones de mayor expectativa de vida promedio.
+ (Se esperan 2 columnas y 10 registros).*/
+
+SELECT
+    country.region as "Regiones",
+    AVG(country.LifeExpectancy) as "Expectativa_de_vida_promedio"
+FROM country
+GROUP BY country.region
+ORDER BY
+    Expectativa_de_vida_promedio DESC
+LIMIT 10;
+
+/*43. Mostrar los nombres de los diez distritos de mayor cantidad de ciudades con cantidad de habitantes mayor al medio millón, junto a la cantidad de ciudades.
+ (Se esperan 3 columnas y 10 registros).*/
+
+SELECT
+    city.district as "Districto",
+    SUM(city.population) as "Cant_habitantes",
+    count(city.name) as "Cant_ciudades"
+FROM city
+WHERE city.population > 500000
+GROUP BY city.district
+ORDER BY Cant_ciudades DESC
+LIMIT 10;
+
+/*44. Mostrar los nombres de los países que tengan ciudades en el Caribe, junto al número de las mismas por país. 
+ (Se esperan 2 columnas y 24 registros).*/
+
+SELECT
+    country.name as "Pais",
+    COUNT(city.name)
+FROM country
+    INNER JOIN city on country.code = city.countrycode
+WHERE
+    country.region = "caribbean"
+GROUP BY country.name;
+
+/*45. Mostrar los lenguajes existentes junto a la cantidad de países que lo hablan de manera oficial. 
+ (Se esperan 2 columnas y 102 registros).*/
+
+SELECT
+    countrylanguage.language as "Lenguajes",
+    COUNT(countrylanguage.language) as "Paises_que_lo_hablan"
+FROM countrylanguage
+WHERE
+    countrylanguage.IsOfficial = "T"
+GROUP BY
+    countrylanguage.language;
