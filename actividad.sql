@@ -454,3 +454,74 @@ WHERE
     countrylanguage.IsOfficial = "T"
 GROUP BY
     countrylanguage.language;
+
+/*Filtrado de grupos.*/
+
+/*46. Mostrar listados los años de independencia (sin nulos) junto a la cantidad de países que la hayan conseguido en ese año. Se desea visualizar aquellos años donde más de un país se haya independizado. 
+ (Se esperan 2 columnas y 39 registros).*/
+
+SELECT
+    country.indepyear as "Año indep",
+    COUNT(country.name) as "Cant paises"
+FROM country
+WHERE
+    country.indepyear IS NOT NULL
+GROUP BY country.indepyear
+HAVING COUNT(country.name) > 1;
+
+/*HAVING Cuando tengo que filtrar sobre funciones agregadas*/
+
+/*47. Listar los países junto a la cantidad de idiomas diferentes hablados, pero solo aquellos donde se hablen entre tres y cinco idiomas diferentes. 
+ (Se esperan 2 columnas y 80 registros).*/
+
+SELECT
+    country.name as "Pais",
+    COUNT(countrylanguage.language) as "Cant_idiomas"
+FROM country
+    INNER JOIN countrylanguage on country.code = countrylanguage.countrycode
+GROUP BY country.name
+HAVING
+    COUNT(countrylanguage.language) BETWEEN 3 and 5;
+
+/*48. Mostrar los distritos, junto al nombre del país al que pertenecen, cuya población total (también listada) no supere los diez mil habitantes. 
+ (Se esperan 3 columnas y 35 registros).*/
+
+SELECT
+    city.district as "Distrito",
+    country.name as "Pais",
+    SUM(city.population) as "Poblacion_total"
+FROM city
+    INNER JOIN country on country.code = city.countrycode
+GROUP BY Distrito, Pais
+HAVING Poblacion_total <= 10000;
+
+/*49. Mostrar las regiones junto a su densidad poblacional promedio, donde ésta supere a la mitad de la densidad poblacional máxima. 
+ (Se esperan 2 columnas y 3 registros).*/
+
+SELECT
+    country.region as "Region",
+    AVG(
+        country.Population / country.SurfaceArea
+    ) as "Densidad_promedio"
+FROM country
+GROUP BY country.region
+HAVING
+    Densidad_promedio > (
+        MAX(
+            country.Population / country.SurfaceArea
+        )
+    ) / 2;
+
+/*50. Mostrar los lenguajes oficiales junto a su porcentaje promedio de habla, cuyo promedio no supere un dígito entero. 
+ (Se esperan 2 columnas y 7 registros).*/
+
+SELECT
+    countrylanguage.language as "Lenguajes_oficiales",
+    AVG(countrylanguage.percentage) as "% promedio de habla"
+FROM countrylanguage
+WHERE
+    countrylanguage.isofficial = "T"
+GROUP BY
+    countrylanguage.language
+HAVING
+    AVG(countrylanguage.percentage) < 10;
